@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kang Idrissi (강 이드리시) - Toko Online</title>
+  <style>
+    :root{
+      --bg-1: #020617;
+      --bg-2: #071033;
+      --card: #0f172a;
+      --accent: #3b82f6;
+      --accent-2: #60a5fa;
+      --muted: #cbd5e1;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top left, #04183a 0%, var(--bg-1) 35%, var(--bg-2) 100%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:18px 24px;
+      background: linear-gradient(180deg, rgba(10,20,40,0.6), rgba(6,10,25,0.4));
+      border-bottom:1px solid rgba(59,130,246,0.12);
+      box-shadow: 0 8px 30px rgba(59,130,246,0.06);
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter: blur(6px);
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:52px;height:52px;border-radius:10px;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      display:flex;align-items:center;justify-content:center;
+      box-shadow: 0 6px 18px rgba(59,130,246,0.25), inset 0 -6px 18px rgba(0,0,0,0.2);
+      font-weight:700;color:white;font-size:18px;letter-spacing:0.4px;
+    }
+    .brand h1{ margin:0; font-size:18px; color:var(--accent-2); }
+    .brand p{ margin:0; font-size:12px; color:var(--muted) }
+
+    .controls{
+      display:flex;gap:12px;align-items:center;
+    }
+    .contact{
+      font-size:13px;color:var(--muted); background:var(--glass); padding:8px 10px;border-radius:10px;
+      border:1px solid rgba(96,165,250,0.06);
+    }
+
+    /* cart button */
+    .cart-btn{
+      position:relative;
+      background: linear-gradient(180deg,var(--accent),#1e3a8a);
+      border:none;padding:10px 14px;border-radius:10px;color:white;cursor:pointer;
+      display:flex;align-items:center;gap:8px;font-weight:600;
+      box-shadow: 0 6px 20px rgba(59,130,246,0.25);
+    }
+    .cart-count{
+      position:absolute;right:-6px;top:-6px;background:#ef4444;color:#fff;border-radius:999px;
+      padding:4px 7px;font-size:12px;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    main{ padding:22px; max-width:1200px; margin:0 auto; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(230px,1fr));
+      gap:18px;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;
+      overflow:hidden;
+      border:1px solid rgba(96,165,250,0.07);
+      box-shadow: 0 8px 24px rgba(2,6,23,0.6);
+      transition:transform .18s, box-shadow .18s;
+      display:flex;flex-direction:column;
+    }
+    .card:hover{ transform:translateY(-6px); box-shadow: 0 20px 40px rgba(59,130,246,0.14); }
+
+    .card img{ width:100%; height:150px; object-fit:cover; display:block; }
+    .card .body{ padding:12px; flex:1; display:flex;flex-direction:column; gap:8px; }
+    .card h3{ margin:0;color:var(--accent-2); font-size:16px; }
+    .card p{ margin:0;color:#dbeafe; font-size:14px; opacity:0.95; }
+    .price{ font-weight:700; color:#bfdbfe; margin-top:6px; font-size:15px; }
+    .card .actions{ margin-top:auto; }
+    .add-btn{
+      width:100%; padding:10px;border-radius:8px;border:none;cursor:pointer;
+      background: linear-gradient(90deg,var(--accent), #1e3a8a); color:white; font-weight:700;
+      box-shadow: 0 8px 22px rgba(59,130,246,0.18);
+    }
+    .add-btn:hover{ opacity:0.95; transform: translateY(-1px); }
+
+    /* cart panel */
+    .cart-panel{
+      position:fixed; right:18px; bottom:18px; width:360px; max-width:92%;
+      background: linear-gradient(180deg, rgba(10,18,40,0.98), rgba(6,8,20,0.98));
+      border-radius:12px; padding:14px; border:1px solid rgba(96,165,250,0.08);
+      box-shadow: 0 20px 60px rgba(2,6,23,0.6);
+      transform: translateY(8px);
+    }
+    .cart-panel h4{ margin:0 0 8px 0; color:var(--accent-2) }
+    .cart-list{ max-height:260px; overflow:auto; padding:6px; display:flex;flex-direction:column; gap:8px; margin-bottom:10px; }
+    .cart-item{
+      display:flex; gap:10px; align-items:center; background:rgba(255,255,255,0.02); padding:8px; border-radius:8px;
+      border:1px solid rgba(96,165,250,0.04);
+    }
+    .cart-item img{ width:56px;height:44px; object-fit:cover; border-radius:6px; }
+    .ci-body{ flex:1; display:flex;flex-direction:column; gap:4px; }
+    .ci-body b{ color:#e6f0ff; font-size:14px; }
+    .ci-meta{ font-size:13px; color:var(--muted); display:flex; gap:8px; align-items:center; }
+    .qty-controls{ display:flex; gap:6px; align-items:center; }
+    .qty-controls button{
+      width:28px;height:28px;border-radius:6px;border:none;background:rgba(255,255,255,0.04); color:#cfe8ff; cursor:pointer;
+    }
+    .remove-btn{ background:transparent; border:1px solid rgba(255,255,255,0.04); padding:6px 8px; border-radius:8px; cursor:pointer; color:#fecaca; }
+    .cart-footer{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:8px; }
+    .total{ font-weight:800; color:var(--accent-2); font-size:18px; }
+    .checkout-btn{ background: linear-gradient(90deg,#06b6d4,#3b82f6); color:#021124; padding:10px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:700; }
+    .empty{ color:var(--muted); text-align:center; padding:20px 0; }
+
+    /* responsive tweaks */
+    @media (max-width:640px){
+      .cart-panel{ right:10px; left:10px; bottom:14px; width:auto; max-width:calc(100% - 20px); }
+      header{ flex-direction:column; gap:10px; align-items:flex-start; padding:12px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">KI</div>
+      <div>
+        <h1>Kang Idrissi (강 이드리시)</h1>
+        <p>Selamat datang di toko online — feel the blue glow ✨</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="contact">Kontak: <strong style="color:var(--accent-2)">081994300509</strong></div>
+      <button class="cart-btn" id="open-cart">
+        🛒 Keranjang
+        <span class="cart-count" id="cart-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="grid" id="products-grid">
+      <!-- Produk akan di-render lewat JS -->
+    </section>
+  </main>
+
+  <!-- Cart panel -->
+  <aside class="cart-panel" id="cart-panel" style="display:none;">
+    <h4>Keranjang Belanja</h4>
+    <div class="cart-list" id="cart-list"></div>
+
+    <div id="cart-empty" class="empty" style="display:none;">Keranjang kosong. Tambah barang dulu ya 😊</div>
+
+    <div class="cart-footer">
+      <div class="total">Total: Rp <span id="cart-total">0</span></div>
+      <div style="display:flex;gap:8px;">
+        <button class="remove-btn" id="clear-cart">Kosongkan</button>
+        <button class="checkout-btn" id="checkout">Checkout</button>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    // Gambar sudah disesuaikan supaya benar sesuai nama produk (menggunakan Unsplash query)
+    const products = [
+      { id:1, name:"Kaos Polos", price:75000, img:"https://source.unsplash.com/600x400/?tshirt,tee&sig=101" },
+      { id:2, name:"Celana Jeans", price:150000, img:"https://source.unsplash.com/600x400/?jeans,denim&sig=102" },
+      { id:3, name:"Sepatu Sneakers", price:250000, img:"https://source.unsplash.com/600x400/?sneakers,shoes&sig=103" },
+      { id:4, name:"Tas Ransel", price:180000, img:"https://source.unsplash.com/600x400/?backpack,bag&sig=104" },
+      { id:5, name:"Jaket Hoodie", price:200000, img:"https://source.unsplash.com/600x400/?hoodie,jacket&sig=105" },
+      { id:6, name:"Topi Baseball", price:50000, img:"https://source.unsplash.com/600x400/?cap,baseballcap&sig=106" },
+      { id:7, name:"Kemeja Casual", price:120000, img:"https://source.unsplash.com/600x400/?shirt,casualshirt&sig=107" },
+      { id:8, name:"Sweater Rajut", price:170000, img:"https://source.unsplash.com/600x400/?sweater,knitwear&sig=108" },
+      { id:9, name:"Sandal Santai", price:90000, img:"https://source.unsplash.com/600x400/?sandals,flipflops&sig=109" },
+      { id:10, name:"Jas Formal", price:300000, img:"https://source.unsplash.com/600x400/?suit,formalwear&sig=110" }
+    ];
+
+    // element refs
+    const grid = document.getElementById('products-grid');
+    const cartCountEl = document.getElementById('cart-count');
+    const cartPanel = document.getElementById('cart-panel');
+    const cartListEl = document.getElementById('cart-list');
+    const cartTotalEl = document.getElementById('cart-total');
+    const cartEmptyEl = document.getElementById('cart-empty');
+
+    // cart: array of {id, qty}
+    let cart = [];
+
+    // load cart from localStorage
+    function loadCart(){
+      try{
+        const saved = localStorage.getItem('kang-idrissi-cart');
+        if(saved) cart = JSON.parse(saved);
+      }catch(e){ cart = []; }
+      updateCartUI();
+    }
+
+    function saveCart(){
+      localStorage.setItem('kang-idrissi-cart', JSON.stringify(cart));
+    }
+
+    // render products
+    function renderProducts(){
+      grid.innerHTML = '';
+      products.forEach(p => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${p.img}" alt="${p.name}">
+          <div class="body">
+            <h3>${p.name}</h3>
+            <p>Deskripsi singkat ${p.name} — cocok untuk sehari-hari.</p>
+            <div class="price">Rp ${p.price.toLocaleString('id-ID')}</div>
+            <div class="actions"><button class="add-btn" data-id="${p.id}">Tambah ke Keranjang</button></div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      // attach listeners
+      document.querySelectorAll('.add-btn').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          const id = Number(btn.getAttribute('data-id'));
+          addToCart(id);
+        });
+      });
+    }
+
+    function addToCart(id){
+      const found = cart.find(i=>i.id===id);
+      if(found){
+        found.qty += 1;
+      }else{
+        cart.push({id, qty:1});
+      }
+      saveCart();
+      updateCartUI();
+      // small feedback
+      flashCart();
+    }
+
+    function removeFromCart(id){
+      cart = cart.filter(i=>i.id!==id);
+      saveCart();
+      updateCartUI();
+    }
+
+    function changeQty(id, delta){
+      const item = cart.find(i=>i.id===id);
+      if(!item) return;
+      item.qty += delta;
+      if(item.qty <= 0) removeFromCart(id);
+      saveCart();
+      updateCartUI();
+    }
+
+    function clearCart(){
+      cart = [];
+      saveCart();
+      updateCartUI();
+    }
+
+    function calculateTotal(){
+      let total = 0;
+      cart.forEach(ci=>{
+        const p = products.find(x=>x.id===ci.id);
+        if(p) total += p.price * ci.qty;
+      });
+      return total;
+    }
+
+    function updateCartUI(){
+      // count
+      const count = cart.reduce((s,i)=>s+i.qty,0);
+      cartCountEl.textContent = count;
+
+      // list
+      cartListEl.innerHTML = '';
+      if(cart.length === 0){
+        cartEmptyEl.style.display = 'block';
+      } else {
+        cartEmptyEl.style.display = 'none';
+      }
+      cart.forEach(ci=>{
+        const p = products.find(x=>x.id===ci.id);
+        if(!p) return;
+        const node = document.createElement('div');
+        node.className = 'cart-item';
+        node.innerHTML = `
+          <img src="${p.img}" alt="${p.name}">
+          <div class="ci-body">
+            <b>${p.name}</b>
+            <div class="ci-meta">
+              <div>Rp ${ (p.price * ci.qty).toLocaleString('id-ID') } • <span style="opacity:.9">(${ci.qty} x Rp ${p.price.toLocaleString('id-ID')})</span></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+            <div class="qty-controls">
+              <button data-action="dec" data-id="${p.id}">-</button>
+              <div style="min-width:28px;text-align:center;color:#dbeafe;font-weight:700">${ci.qty}</div>
+              <button data-action="inc" data-id="${p.id}">+</button>
+            </div>
+            <button class="remove-btn" data-action="rm" data-id="${p.id}">Hapus</button>
+          </div>
+        `;
+        cartListEl.appendChild(node);
+      });
+
+      // attach listeners for qty and remove
+      cartListEl.querySelectorAll('[data-action]').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          const act = btn.getAttribute('data-action');
+          const id = Number(btn.getAttribute('data-id'));
+          if(act==='inc') changeQty(id, +1);
+          if(act==='dec') changeQty(id, -1);
+          if(act==='rm') removeFromCart(id);
+        });
+      });
+
+      // total
+      const total = calculateTotal();
+      cartTotalEl.textContent = total.toLocaleString('id-ID');
+    }
+
+    // small animation: flash open cart count
+    function flashCart(){
+      const el = cartCountEl;
+      el.animate([
+        { transform:'scale(1)', offset:0 },
+        { transform:'scale(1.35)', offset:0.4 },
+        { transform:'scale(1)', offset:1 }
+      ], { duration:380, easing:'cubic-bezier(.2,.9,.3,1)'});
+    }
+
+    // open/close cart
+    document.getElementById('open-cart').addEventListener('click', ()=>{
+      cartPanel.style.display = cartPanel.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.getElementById('clear-cart').addEventListener('click', ()=>{
+      if(confirm('Yakin kosongkan keranjang?')) clearCart();
+    });
+
+    document.getElementById('checkout').addEventListener('click', ()=>{
+      const total = calculateTotal();
+      if(total === 0){
+        alert('Keranjang kosong — tambahkan barang dulu.');
+        return;
+      }
+      // Simple checkout simulation
+      alert('Terima kasih! Total pembayaran: Rp ' + total.toLocaleString('id-ID') + '\nNomor kontak toko: 081994300509\n\n(Proses pembayaran belum diimplementasikan pada demo ini.)');
+    });
+
+    // init
+    renderProducts();
+    loadCart();
+  </script>
+</body>
+</html>
